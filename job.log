@@ -1,0 +1,1087 @@
+
+> printf("main.R -- BEGINNING OF LOGFILE -- %s\n", Sys.time())
+main.R -- BEGINNING OF LOGFILE -- 2023-01-05 11:59:49
+
+> # Import the dataset
+> auto.mpg <- read.table("dataset/auto-mpg.data", row.names = NULL, quote = "\"", comment.char = "")
+
+> library(e1071) # For SVM
+
+> library(readr) #read.csv
+
+> library(hrbrthemes) #Rheme_ipsum
+
+> library(caret)
+
+> library(dplyr)
+
+> dataSet <- read_csv("data/Seed_Data.csv")
+[1mindexed[0m [32m0B[0m in [36m 0s[0m, [32m0B/s[0m[1mindexed[0m [32m2.15GB[0m in [36m 0s[0m, [32m2.15GB/s[0m                                                                                                                                          
+> colnames(dataSet)[1] <- "Area"
+
+> colnames(dataSet)[2] <- "Perimeter"
+
+> colnames(dataSet)[3] <- "Compactness"
+
+> colnames(dataSet)[4] <- "Kernel.Length"
+
+> colnames(dataSet)[5] <- "Kernel.Width"
+
+> colnames(dataSet)[6] <- "Asymmetry.coefficient"
+
+> colnames(dataSet)[7] <- "Kernel.Groove"
+
+> colnames(dataSet)[8] <- "Target"
+
+> dataSet <- as.data.frame(scale(dataSet))
+
+> #View(dataSet)
+> dim(dataSet)
+[1] 210   8
+
+> glimpse(dataSet)
+Rows: 210
+Columns: 8
+$ Area                  [3m[38;5;246m<dbl>[39m[23m 0.14175904, 0.01116136, -0.19160873, -0.34626388, 0.44419577, -0.16067770, -0.05413749, -0.25347079, 0.61259…
+$ Perimeter             [3m[38;5;246m<dbl>[39m[23m 0.214948819, 0.008204153, -0.359341919, -0.474200066, 0.329806966, -0.267455401, -0.053053525, -0.351684709,…
+$ Compactness           [3m[38;5;246m<dbl>[39m[23m 6.045733e-05, 4.274938e-01, 1.438945e+00, 1.036904e+00, 1.371233e+00, 1.019976e+00, 3.767096e-01, 8.506951e-…
+$ Kernel.Length         [3m[38;5;246m<dbl>[39m[23m 0.30349301, -0.16822270, -0.76181710, -0.68733567, 0.06650665, -0.54740087, -0.14790958, -0.47066243, 0.9580…
+$ Kernel.Width          [3m[38;5;246m<dbl>[39m[23m 0.141364035, 0.196961591, 0.207551602, 0.318746714, 0.803239702, 0.141364035, 0.001046394, 0.114889009, 0.54…
+$ Asymmetry.coefficient [3m[38;5;246m<dbl>[39m[23m -0.98380096, -1.78390358, -0.66588820, -0.95852756, -1.55976843, -0.82351440, -0.07595385, -0.66522311, -1.1…
+$ Kernel.Groove         [3m[38;5;246m<dbl>[39m[23m -0.38266305, -0.91981560, -1.18635720, -1.22705057, -0.47422315, -0.91981560, -0.38469772, -0.83029017, 0.95…
+$ Target                [3m[38;5;246m<dbl>[39m[23m -1.221825, -1.221825, -1.221825, -1.221825, -1.221825, -1.221825, -1.221825, -1.221825, -1.221825, -1.221825…
+
+> summary(dataSet)
+      Area           Perimeter        Compactness      Kernel.Length      Kernel.Width     Asymmetry.coefficient Kernel.Groove    
+ Min.   :-1.4632   Min.   :-1.6458   Min.   :-2.6619   Min.   :-1.6466   Min.   :-1.6642   Min.   :-1.95210      Min.   :-1.8090  
+ 1st Qu.:-0.8858   1st Qu.:-0.8494   1st Qu.:-0.5967   1st Qu.:-0.8267   1st Qu.:-0.8329   1st Qu.:-0.75734      1st Qu.:-0.7387  
+ Median :-0.1693   Median :-0.1832   Median : 0.1037   Median :-0.2371   Median :-0.0572   Median :-0.06731      Median :-0.3766  
+ Mean   : 0.0000   Mean   : 0.0000   Mean   : 0.0000   Mean   : 0.0000   Mean   : 0.0000   Mean   : 0.00000      Mean   : 0.0000  
+ 3rd Qu.: 0.8446   3rd Qu.: 0.8850   3rd Qu.: 0.7100   3rd Qu.: 0.7927   3rd Qu.: 0.8026   3rd Qu.: 0.71068      3rd Qu.: 0.9541  
+ Max.   : 2.1763   Max.   : 2.0603   Max.   : 2.0018   Max.   : 2.3619   Max.   : 2.0502   Max.   : 3.16303      Max.   : 2.3234  
+     Target      
+ Min.   :-1.222  
+ 1st Qu.:-1.222  
+ Median : 0.000  
+ Mean   : 0.000  
+ 3rd Qu.: 1.222  
+ Max.   : 1.222  
+
+> indices <- sample(2, nrow(dataSet), replace=TRUE, prob=c(0.7, 0.3))
+
+> trainset <- dataSet[indices==1,]
+
+> testset <- dataSet[indices==2,]
+
+> #svm.model <- svm(Target ~ ., data=trainset)
+> svm.model <- svm(Target ~ ., data=trainset, method = "svmRadial", cost=2, gamma=0.1)
+
+> svm.pred = predict(svm.model, testset[,! names(testset) %in% c("dataSet")])
+
+> svm.table=table(svm.pred, testset$Target)
+
+> # Now you should be able to create the confusion matrix
+> confusion_matrix <- confusionMatrix(predF, tesFac)
+
+> library(e1071) # For SVM
+
+> library(readr) #read.csv
+
+> library(hrbrthemes) #Rheme_ipsum
+
+> library(caret)
+
+> library(dplyr)
+
+> dataSet <- read_csv("data/Seed_Data.csv")
+[1mindexed[0m [32m0B[0m in [36m 0s[0m, [32m0B/s[0m[1mindexed[0m [32m2.15GB[0m in [36m 0s[0m, [32m2.15GB/s[0m                                                                                                                                          
+> colnames(dataSet)[1] <- "Area"
+
+> colnames(dataSet)[2] <- "Perimeter"
+
+> colnames(dataSet)[3] <- "Compactness"
+
+> colnames(dataSet)[4] <- "Kernel.Length"
+
+> colnames(dataSet)[5] <- "Kernel.Width"
+
+> colnames(dataSet)[6] <- "Asymmetry.coefficient"
+
+> colnames(dataSet)[7] <- "Kernel.Groove"
+
+> colnames(dataSet)[8] <- "Target"
+
+> dataSet <- as.data.frame(scale(dataSet))
+
+> #View(dataSet)
+> dim(dataSet)
+[1] 210   8
+
+> glimpse(dataSet)
+Rows: 210
+Columns: 8
+$ Area                  [3m[38;5;246m<dbl>[39m[23m 0.14175904, 0.01116136, -0.19160873, -0.34626388, 0.44419577, -0.16067770, -0.05413749, -0.25347079, 0.61259…
+$ Perimeter             [3m[38;5;246m<dbl>[39m[23m 0.214948819, 0.008204153, -0.359341919, -0.474200066, 0.329806966, -0.267455401, -0.053053525, -0.351684709,…
+$ Compactness           [3m[38;5;246m<dbl>[39m[23m 6.045733e-05, 4.274938e-01, 1.438945e+00, 1.036904e+00, 1.371233e+00, 1.019976e+00, 3.767096e-01, 8.506951e-…
+$ Kernel.Length         [3m[38;5;246m<dbl>[39m[23m 0.30349301, -0.16822270, -0.76181710, -0.68733567, 0.06650665, -0.54740087, -0.14790958, -0.47066243, 0.9580…
+$ Kernel.Width          [3m[38;5;246m<dbl>[39m[23m 0.141364035, 0.196961591, 0.207551602, 0.318746714, 0.803239702, 0.141364035, 0.001046394, 0.114889009, 0.54…
+$ Asymmetry.coefficient [3m[38;5;246m<dbl>[39m[23m -0.98380096, -1.78390358, -0.66588820, -0.95852756, -1.55976843, -0.82351440, -0.07595385, -0.66522311, -1.1…
+$ Kernel.Groove         [3m[38;5;246m<dbl>[39m[23m -0.38266305, -0.91981560, -1.18635720, -1.22705057, -0.47422315, -0.91981560, -0.38469772, -0.83029017, 0.95…
+$ Target                [3m[38;5;246m<dbl>[39m[23m -1.221825, -1.221825, -1.221825, -1.221825, -1.221825, -1.221825, -1.221825, -1.221825, -1.221825, -1.221825…
+
+> summary(dataSet)
+      Area           Perimeter        Compactness      Kernel.Length      Kernel.Width     Asymmetry.coefficient Kernel.Groove    
+ Min.   :-1.4632   Min.   :-1.6458   Min.   :-2.6619   Min.   :-1.6466   Min.   :-1.6642   Min.   :-1.95210      Min.   :-1.8090  
+ 1st Qu.:-0.8858   1st Qu.:-0.8494   1st Qu.:-0.5967   1st Qu.:-0.8267   1st Qu.:-0.8329   1st Qu.:-0.75734      1st Qu.:-0.7387  
+ Median :-0.1693   Median :-0.1832   Median : 0.1037   Median :-0.2371   Median :-0.0572   Median :-0.06731      Median :-0.3766  
+ Mean   : 0.0000   Mean   : 0.0000   Mean   : 0.0000   Mean   : 0.0000   Mean   : 0.0000   Mean   : 0.00000      Mean   : 0.0000  
+ 3rd Qu.: 0.8446   3rd Qu.: 0.8850   3rd Qu.: 0.7100   3rd Qu.: 0.7927   3rd Qu.: 0.8026   3rd Qu.: 0.71068      3rd Qu.: 0.9541  
+ Max.   : 2.1763   Max.   : 2.0603   Max.   : 2.0018   Max.   : 2.3619   Max.   : 2.0502   Max.   : 3.16303      Max.   : 2.3234  
+     Target      
+ Min.   :-1.222  
+ 1st Qu.:-1.222  
+ Median : 0.000  
+ Mean   : 0.000  
+ 3rd Qu.: 1.222  
+ Max.   : 1.222  
+
+> indices <- sample(2, nrow(dataSet), replace=TRUE, prob=c(0.7, 0.3))
+
+> trainset <- dataSet[indices==1,]
+
+> testset <- dataSet[indices==2,]
+
+> #svm.model <- svm(Target ~ ., data=trainset)
+> svm.model <- svm(Target ~ ., data=trainset, method = "svmRadial", cost=2, gamma=0.1)
+
+> svm.pred = predict(svm.model, testset[,! names(testset) %in% c("dataSet")])
+
+> svm.table=table(svm.pred, testset$Target)
+
+> # Convert predictions and testset$Target to factors
+> svm.pred <- round(svm.pred) #ARROTONDA FLOAT IN Number senza .
+
+> predF <- as.factor(svm.pred)
+
+> tesFac <- as.factor(testset$Target)
+
+> # Now you should be able to create the confusion matrix
+> confusion_matrix <- confusionMatrix(predF, tesFac)
+
+> library(e1071) # For SVM
+
+> library(readr) #read.csv
+
+> library(hrbrthemes) #Rheme_ipsum
+
+> library(caret)
+
+> library(dplyr)
+
+> dataSet <- read_csv("data/Seed_Data.csv")
+[1mindexed[0m [32m0B[0m in [36m 0s[0m, [32m0B/s[0m[1mindexed[0m [32m2.15GB[0m in [36m 0s[0m, [32m2.15GB/s[0m                                                                                                                                          
+> colnames(dataSet)[1] <- "Area"
+
+> colnames(dataSet)[2] <- "Perimeter"
+
+> colnames(dataSet)[3] <- "Compactness"
+
+> colnames(dataSet)[4] <- "Kernel.Length"
+
+> colnames(dataSet)[5] <- "Kernel.Width"
+
+> colnames(dataSet)[6] <- "Asymmetry.coefficient"
+
+> colnames(dataSet)[7] <- "Kernel.Groove"
+
+> colnames(dataSet)[8] <- "Target"
+
+> dataSet <- as.data.frame(scale(dataSet))
+
+> #View(dataSet)
+> dim(dataSet)
+[1] 210   8
+
+> glimpse(dataSet)
+Rows: 210
+Columns: 8
+$ Area                  [3m[38;5;246m<dbl>[39m[23m 0.14175904, 0.01116136, -0.19160873, -0.34626388, 0.44419577, -0.16067770, -0.05413749, -0.25347079, 0.61259…
+$ Perimeter             [3m[38;5;246m<dbl>[39m[23m 0.214948819, 0.008204153, -0.359341919, -0.474200066, 0.329806966, -0.267455401, -0.053053525, -0.351684709,…
+$ Compactness           [3m[38;5;246m<dbl>[39m[23m 6.045733e-05, 4.274938e-01, 1.438945e+00, 1.036904e+00, 1.371233e+00, 1.019976e+00, 3.767096e-01, 8.506951e-…
+$ Kernel.Length         [3m[38;5;246m<dbl>[39m[23m 0.30349301, -0.16822270, -0.76181710, -0.68733567, 0.06650665, -0.54740087, -0.14790958, -0.47066243, 0.9580…
+$ Kernel.Width          [3m[38;5;246m<dbl>[39m[23m 0.141364035, 0.196961591, 0.207551602, 0.318746714, 0.803239702, 0.141364035, 0.001046394, 0.114889009, 0.54…
+$ Asymmetry.coefficient [3m[38;5;246m<dbl>[39m[23m -0.98380096, -1.78390358, -0.66588820, -0.95852756, -1.55976843, -0.82351440, -0.07595385, -0.66522311, -1.1…
+$ Kernel.Groove         [3m[38;5;246m<dbl>[39m[23m -0.38266305, -0.91981560, -1.18635720, -1.22705057, -0.47422315, -0.91981560, -0.38469772, -0.83029017, 0.95…
+$ Target                [3m[38;5;246m<dbl>[39m[23m -1.221825, -1.221825, -1.221825, -1.221825, -1.221825, -1.221825, -1.221825, -1.221825, -1.221825, -1.221825…
+
+> summary(dataSet)
+      Area           Perimeter        Compactness      Kernel.Length      Kernel.Width     Asymmetry.coefficient Kernel.Groove    
+ Min.   :-1.4632   Min.   :-1.6458   Min.   :-2.6619   Min.   :-1.6466   Min.   :-1.6642   Min.   :-1.95210      Min.   :-1.8090  
+ 1st Qu.:-0.8858   1st Qu.:-0.8494   1st Qu.:-0.5967   1st Qu.:-0.8267   1st Qu.:-0.8329   1st Qu.:-0.75734      1st Qu.:-0.7387  
+ Median :-0.1693   Median :-0.1832   Median : 0.1037   Median :-0.2371   Median :-0.0572   Median :-0.06731      Median :-0.3766  
+ Mean   : 0.0000   Mean   : 0.0000   Mean   : 0.0000   Mean   : 0.0000   Mean   : 0.0000   Mean   : 0.00000      Mean   : 0.0000  
+ 3rd Qu.: 0.8446   3rd Qu.: 0.8850   3rd Qu.: 0.7100   3rd Qu.: 0.7927   3rd Qu.: 0.8026   3rd Qu.: 0.71068      3rd Qu.: 0.9541  
+ Max.   : 2.1763   Max.   : 2.0603   Max.   : 2.0018   Max.   : 2.3619   Max.   : 2.0502   Max.   : 3.16303      Max.   : 2.3234  
+     Target      
+ Min.   :-1.222  
+ 1st Qu.:-1.222  
+ Median : 0.000  
+ Mean   : 0.000  
+ 3rd Qu.: 1.222  
+ Max.   : 1.222  
+
+> indices <- sample(2, nrow(dataSet), replace=TRUE, prob=c(0.7, 0.3))
+
+> trainset <- dataSet[indices==1,]
+
+> testset <- dataSet[indices==2,]
+
+> #svm.model <- svm(Target ~ ., data=trainset)
+> svm.model <- svm(Target ~ ., data=trainset, method = "svmRadial", cost=2, gamma=0.1)
+
+> svm.pred = predict(svm.model, testset[,! names(testset) %in% c("dataSet")])
+
+> svm.table=table(svm.pred, testset$Target)
+
+> # Convert predictions and testset$Target to factors
+> svm.pred <- round(svm.pred) #ARROTONDA FLOAT IN Number senza .
+
+> predF <- as.factor(svm.pred)
+
+> tesFac <- as.factor(testset$Target)
+
+> tesFac <- round(tesFac)
+
+> library(e1071) # For SVM
+
+> library(readr) #read.csv
+
+> library(hrbrthemes) #Rheme_ipsum
+
+> library(caret)
+
+> library(dplyr)
+
+> dataSet <- read_csv("data/Seed_Data.csv")
+[1mindexed[0m [32m0B[0m in [36m 0s[0m, [32m0B/s[0m[1mindexed[0m [32m2.15GB[0m in [36m 0s[0m, [32m2.15GB/s[0m                                                                                                                                          
+> colnames(dataSet)[1] <- "Area"
+
+> colnames(dataSet)[2] <- "Perimeter"
+
+> colnames(dataSet)[3] <- "Compactness"
+
+> colnames(dataSet)[4] <- "Kernel.Length"
+
+> colnames(dataSet)[5] <- "Kernel.Width"
+
+> colnames(dataSet)[6] <- "Asymmetry.coefficient"
+
+> colnames(dataSet)[7] <- "Kernel.Groove"
+
+> colnames(dataSet)[8] <- "Target"
+
+> dataSet <- as.data.frame(scale(dataSet))
+
+> #View(dataSet)
+> dim(dataSet)
+[1] 210   8
+
+> glimpse(dataSet)
+Rows: 210
+Columns: 8
+$ Area                  [3m[38;5;246m<dbl>[39m[23m 0.14175904, 0.01116136, -0.19160873, -0.34626388, 0.44419577, -0.16067770, -0.05413749, -0.25347079, 0.61259…
+$ Perimeter             [3m[38;5;246m<dbl>[39m[23m 0.214948819, 0.008204153, -0.359341919, -0.474200066, 0.329806966, -0.267455401, -0.053053525, -0.351684709,…
+$ Compactness           [3m[38;5;246m<dbl>[39m[23m 6.045733e-05, 4.274938e-01, 1.438945e+00, 1.036904e+00, 1.371233e+00, 1.019976e+00, 3.767096e-01, 8.506951e-…
+$ Kernel.Length         [3m[38;5;246m<dbl>[39m[23m 0.30349301, -0.16822270, -0.76181710, -0.68733567, 0.06650665, -0.54740087, -0.14790958, -0.47066243, 0.9580…
+$ Kernel.Width          [3m[38;5;246m<dbl>[39m[23m 0.141364035, 0.196961591, 0.207551602, 0.318746714, 0.803239702, 0.141364035, 0.001046394, 0.114889009, 0.54…
+$ Asymmetry.coefficient [3m[38;5;246m<dbl>[39m[23m -0.98380096, -1.78390358, -0.66588820, -0.95852756, -1.55976843, -0.82351440, -0.07595385, -0.66522311, -1.1…
+$ Kernel.Groove         [3m[38;5;246m<dbl>[39m[23m -0.38266305, -0.91981560, -1.18635720, -1.22705057, -0.47422315, -0.91981560, -0.38469772, -0.83029017, 0.95…
+$ Target                [3m[38;5;246m<dbl>[39m[23m -1.221825, -1.221825, -1.221825, -1.221825, -1.221825, -1.221825, -1.221825, -1.221825, -1.221825, -1.221825…
+
+> summary(dataSet)
+      Area           Perimeter        Compactness      Kernel.Length      Kernel.Width     Asymmetry.coefficient Kernel.Groove    
+ Min.   :-1.4632   Min.   :-1.6458   Min.   :-2.6619   Min.   :-1.6466   Min.   :-1.6642   Min.   :-1.95210      Min.   :-1.8090  
+ 1st Qu.:-0.8858   1st Qu.:-0.8494   1st Qu.:-0.5967   1st Qu.:-0.8267   1st Qu.:-0.8329   1st Qu.:-0.75734      1st Qu.:-0.7387  
+ Median :-0.1693   Median :-0.1832   Median : 0.1037   Median :-0.2371   Median :-0.0572   Median :-0.06731      Median :-0.3766  
+ Mean   : 0.0000   Mean   : 0.0000   Mean   : 0.0000   Mean   : 0.0000   Mean   : 0.0000   Mean   : 0.00000      Mean   : 0.0000  
+ 3rd Qu.: 0.8446   3rd Qu.: 0.8850   3rd Qu.: 0.7100   3rd Qu.: 0.7927   3rd Qu.: 0.8026   3rd Qu.: 0.71068      3rd Qu.: 0.9541  
+ Max.   : 2.1763   Max.   : 2.0603   Max.   : 2.0018   Max.   : 2.3619   Max.   : 2.0502   Max.   : 3.16303      Max.   : 2.3234  
+     Target      
+ Min.   :-1.222  
+ 1st Qu.:-1.222  
+ Median : 0.000  
+ Mean   : 0.000  
+ 3rd Qu.: 1.222  
+ Max.   : 1.222  
+
+> indices <- sample(2, nrow(dataSet), replace=TRUE, prob=c(0.7, 0.3))
+
+> trainset <- dataSet[indices==1,]
+
+> testset <- dataSet[indices==2,]
+
+> #svm.model <- svm(Target ~ ., data=trainset)
+> svm.model <- svm(Target ~ ., data=trainset, method = "svmRadial", cost=2, gamma=0.1)
+
+> svm.pred = predict(svm.model, testset[,! names(testset) %in% c("dataSet")])
+
+> svm.table=table(svm.pred, testset$Target)
+
+> # Convert predictions and testset$Target to factors
+> svm.pred <- round(svm.pred) #ARROTONDA FLOAT IN Number senza .
+
+> predF <- as.factor(svm.pred)
+
+> tesFac <- as.factor(testset$Target)
+
+> tesFac <- round(tesFac)
+
+> library(e1071) # For SVM
+
+> library(readr) #read.csv
+
+> library(hrbrthemes) #Rheme_ipsum
+
+> library(caret)
+
+> library(dplyr)
+
+> dataSet <- read_csv("data/Seed_Data.csv")
+[1mindexed[0m [32m0B[0m in [36m 0s[0m, [32m0B/s[0m[1mindexed[0m [32m2.15GB[0m in [36m 0s[0m, [32m2.15GB/s[0m                                                                                                                                         
+> colnames(dataSet)[1] <- "Area"
+
+> colnames(dataSet)[2] <- "Perimeter"
+
+> colnames(dataSet)[3] <- "Compactness"
+
+> colnames(dataSet)[4] <- "Kernel.Length"
+
+> colnames(dataSet)[5] <- "Kernel.Width"
+
+> colnames(dataSet)[6] <- "Asymmetry.coefficient"
+
+> colnames(dataSet)[7] <- "Kernel.Groove"
+
+> colnames(dataSet)[8] <- "Target"
+
+> dataSet <- as.data.frame(scale(dataSet))
+
+> #View(dataSet)
+> dim(dataSet)
+[1] 210   8
+
+> glimpse(dataSet)
+Rows: 210
+Columns: 8
+$ Area                  [3m[38;5;246m<dbl>[39m[23m 0.14175904, 0.01116136, -0.19160873, -0.34626388, 0.44419577, -0.16067770, -0.05413749, -0.25347079, 0.6125…
+$ Perimeter             [3m[38;5;246m<dbl>[39m[23m 0.214948819, 0.008204153, -0.359341919, -0.474200066, 0.329806966, -0.267455401, -0.053053525, -0.351684709…
+$ Compactness           [3m[38;5;246m<dbl>[39m[23m 6.045733e-05, 4.274938e-01, 1.438945e+00, 1.036904e+00, 1.371233e+00, 1.019976e+00, 3.767096e-01, 8.506951e…
+$ Kernel.Length         [3m[38;5;246m<dbl>[39m[23m 0.30349301, -0.16822270, -0.76181710, -0.68733567, 0.06650665, -0.54740087, -0.14790958, -0.47066243, 0.958…
+$ Kernel.Width          [3m[38;5;246m<dbl>[39m[23m 0.141364035, 0.196961591, 0.207551602, 0.318746714, 0.803239702, 0.141364035, 0.001046394, 0.114889009, 0.5…
+$ Asymmetry.coefficient [3m[38;5;246m<dbl>[39m[23m -0.98380096, -1.78390358, -0.66588820, -0.95852756, -1.55976843, -0.82351440, -0.07595385, -0.66522311, -1.…
+$ Kernel.Groove         [3m[38;5;246m<dbl>[39m[23m -0.38266305, -0.91981560, -1.18635720, -1.22705057, -0.47422315, -0.91981560, -0.38469772, -0.83029017, 0.9…
+$ Target                [3m[38;5;246m<dbl>[39m[23m -1.221825, -1.221825, -1.221825, -1.221825, -1.221825, -1.221825, -1.221825, -1.221825, -1.221825, -1.22182…
+
+> summary(dataSet)
+      Area           Perimeter        Compactness      Kernel.Length      Kernel.Width     Asymmetry.coefficient Kernel.Groove    
+ Min.   :-1.4632   Min.   :-1.6458   Min.   :-2.6619   Min.   :-1.6466   Min.   :-1.6642   Min.   :-1.95210      Min.   :-1.8090  
+ 1st Qu.:-0.8858   1st Qu.:-0.8494   1st Qu.:-0.5967   1st Qu.:-0.8267   1st Qu.:-0.8329   1st Qu.:-0.75734      1st Qu.:-0.7387  
+ Median :-0.1693   Median :-0.1832   Median : 0.1037   Median :-0.2371   Median :-0.0572   Median :-0.06731      Median :-0.3766  
+ Mean   : 0.0000   Mean   : 0.0000   Mean   : 0.0000   Mean   : 0.0000   Mean   : 0.0000   Mean   : 0.00000      Mean   : 0.0000  
+ 3rd Qu.: 0.8446   3rd Qu.: 0.8850   3rd Qu.: 0.7100   3rd Qu.: 0.7927   3rd Qu.: 0.8026   3rd Qu.: 0.71068      3rd Qu.: 0.9541  
+ Max.   : 2.1763   Max.   : 2.0603   Max.   : 2.0018   Max.   : 2.3619   Max.   : 2.0502   Max.   : 3.16303      Max.   : 2.3234  
+     Target      
+ Min.   :-1.222  
+ 1st Qu.:-1.222  
+ Median : 0.000  
+ Mean   : 0.000  
+ 3rd Qu.: 1.222  
+ Max.   : 1.222  
+
+> indices <- sample(2, nrow(dataSet), replace=TRUE, prob=c(0.7, 0.3))
+
+> trainset <- dataSet[indices==1,]
+
+> testset <- dataSet[indices==2,]
+
+> #svm.model <- svm(Target ~ ., data=trainset)
+> svm.model <- svm(Target ~ ., data=trainset, method = "svmRadial", cost=2, gamma=0.1)
+
+> svm.pred = predict(svm.model, testset[,! names(testset) %in% c("dataSet")])
+
+> svm.table=table(svm.pred, testset$Target)
+
+> # Now you should be able to create the confusion matrix
+> confusion_matrix <- confusionMatrix(predF, tesFac)
+
+> library(e1071) # For SVM
+
+> library(readr) #read.csv
+
+> library(hrbrthemes) #Rheme_ipsum
+
+> library(caret)
+
+> library(dplyr)
+
+> dataSet <- read_csv("data/Seed_Data.csv")
+[1mindexed[0m [32m0B[0m in [36m 0s[0m, [32m0B/s[0m[1mindexed[0m [32m2.15GB[0m in [36m 0s[0m, [32m2.15GB/s[0m                                                                                                                                         
+> colnames(dataSet)[1] <- "Area"
+
+> colnames(dataSet)[2] <- "Perimeter"
+
+> colnames(dataSet)[3] <- "Compactness"
+
+> colnames(dataSet)[4] <- "Kernel.Length"
+
+> colnames(dataSet)[5] <- "Kernel.Width"
+
+> colnames(dataSet)[6] <- "Asymmetry.coefficient"
+
+> colnames(dataSet)[7] <- "Kernel.Groove"
+
+> colnames(dataSet)[8] <- "Target"
+
+> dataSet <- as.data.frame(scale(dataSet))
+
+> #View(dataSet)
+> dim(dataSet)
+[1] 210   8
+
+> glimpse(dataSet)
+Rows: 210
+Columns: 8
+$ Area                  [3m[38;5;246m<dbl>[39m[23m 0.14175904, 0.01116136, -0.19160873, -0.34626388, 0.44419577, -0.16067770, -0.05413749, -0.25347079, 0.6125…
+$ Perimeter             [3m[38;5;246m<dbl>[39m[23m 0.214948819, 0.008204153, -0.359341919, -0.474200066, 0.329806966, -0.267455401, -0.053053525, -0.351684709…
+$ Compactness           [3m[38;5;246m<dbl>[39m[23m 6.045733e-05, 4.274938e-01, 1.438945e+00, 1.036904e+00, 1.371233e+00, 1.019976e+00, 3.767096e-01, 8.506951e…
+$ Kernel.Length         [3m[38;5;246m<dbl>[39m[23m 0.30349301, -0.16822270, -0.76181710, -0.68733567, 0.06650665, -0.54740087, -0.14790958, -0.47066243, 0.958…
+$ Kernel.Width          [3m[38;5;246m<dbl>[39m[23m 0.141364035, 0.196961591, 0.207551602, 0.318746714, 0.803239702, 0.141364035, 0.001046394, 0.114889009, 0.5…
+$ Asymmetry.coefficient [3m[38;5;246m<dbl>[39m[23m -0.98380096, -1.78390358, -0.66588820, -0.95852756, -1.55976843, -0.82351440, -0.07595385, -0.66522311, -1.…
+$ Kernel.Groove         [3m[38;5;246m<dbl>[39m[23m -0.38266305, -0.91981560, -1.18635720, -1.22705057, -0.47422315, -0.91981560, -0.38469772, -0.83029017, 0.9…
+$ Target                [3m[38;5;246m<dbl>[39m[23m -1.221825, -1.221825, -1.221825, -1.221825, -1.221825, -1.221825, -1.221825, -1.221825, -1.221825, -1.22182…
+
+> summary(dataSet)
+      Area           Perimeter        Compactness      Kernel.Length      Kernel.Width     Asymmetry.coefficient Kernel.Groove    
+ Min.   :-1.4632   Min.   :-1.6458   Min.   :-2.6619   Min.   :-1.6466   Min.   :-1.6642   Min.   :-1.95210      Min.   :-1.8090  
+ 1st Qu.:-0.8858   1st Qu.:-0.8494   1st Qu.:-0.5967   1st Qu.:-0.8267   1st Qu.:-0.8329   1st Qu.:-0.75734      1st Qu.:-0.7387  
+ Median :-0.1693   Median :-0.1832   Median : 0.1037   Median :-0.2371   Median :-0.0572   Median :-0.06731      Median :-0.3766  
+ Mean   : 0.0000   Mean   : 0.0000   Mean   : 0.0000   Mean   : 0.0000   Mean   : 0.0000   Mean   : 0.00000      Mean   : 0.0000  
+ 3rd Qu.: 0.8446   3rd Qu.: 0.8850   3rd Qu.: 0.7100   3rd Qu.: 0.7927   3rd Qu.: 0.8026   3rd Qu.: 0.71068      3rd Qu.: 0.9541  
+ Max.   : 2.1763   Max.   : 2.0603   Max.   : 2.0018   Max.   : 2.3619   Max.   : 2.0502   Max.   : 3.16303      Max.   : 2.3234  
+     Target      
+ Min.   :-1.222  
+ 1st Qu.:-1.222  
+ Median : 0.000  
+ Mean   : 0.000  
+ 3rd Qu.: 1.222  
+ Max.   : 1.222  
+
+> indices <- sample(2, nrow(dataSet), replace=TRUE, prob=c(0.7, 0.3))
+
+> trainset <- dataSet[indices==1,]
+
+> testset <- dataSet[indices==2,]
+
+> #svm.model <- svm(Target ~ ., data=trainset)
+> svm.model <- svm(Target ~ ., data=trainset, method = "svmRadial", cost=2, gamma=0.1)
+
+> svm.pred = predict(svm.model, testset[,! names(testset) %in% c("dataSet")])
+
+> svm.table=table(svm.pred, testset$Target)
+
+> # Now you should be able to create the confusion matrix
+> confusion_matrix <- confusionMatrix(svm.pred, testset$Target)
+NULL
+
+> library(e1071) # For SVM
+
+> library(readr) #read.csv
+
+> library(hrbrthemes) #Rheme_ipsum
+
+> library(caret)
+
+> library(dplyr)
+
+> dataSet <- read_csv("data/Seed_Data.csv")
+[1mindexed[0m [32m0B[0m in [36m 0s[0m, [32m0B/s[0m[1mindexed[0m [32m2.15GB[0m in [36m 0s[0m, [32m2.15GB/s[0m                                                                                                                                         
+> colnames(dataSet)[1] <- "Area"
+
+> colnames(dataSet)[2] <- "Perimeter"
+
+> colnames(dataSet)[3] <- "Compactness"
+
+> colnames(dataSet)[4] <- "Kernel.Length"
+
+> colnames(dataSet)[5] <- "Kernel.Width"
+
+> colnames(dataSet)[6] <- "Asymmetry.coefficient"
+
+> colnames(dataSet)[7] <- "Kernel.Groove"
+
+> colnames(dataSet)[8] <- "Target"
+
+> #View(dataSet)
+> dim(dataSet)
+[1] 210   8
+
+> glimpse(dataSet)
+Rows: 210
+Columns: 8
+$ Area                  [3m[38;5;246m<dbl>[39m[23m 15.26, 14.88, 14.29, 13.84, 16.14, 14.38, 14.69, 14.11, 16.63, 16.44, 15.26, 14.03, 13.89, 13.78, 13.74, 14…
+$ Perimeter             [3m[38;5;246m<dbl>[39m[23m 14.84, 14.57, 14.09, 13.94, 14.99, 14.21, 14.49, 14.10, 15.46, 15.25, 14.85, 14.16, 14.02, 14.06, 14.05, 14…
+$ Compactness           [3m[38;5;246m<dbl>[39m[23m 0.8710, 0.8811, 0.9050, 0.8955, 0.9034, 0.8951, 0.8799, 0.8911, 0.8747, 0.8880, 0.8696, 0.8796, 0.8880, 0.8…
+$ Kernel.Length         [3m[38;5;246m<dbl>[39m[23m 5.763, 5.554, 5.291, 5.324, 5.658, 5.386, 5.563, 5.420, 6.053, 5.884, 5.714, 5.438, 5.439, 5.479, 5.482, 5.…
+$ Kernel.Width          [3m[38;5;246m<dbl>[39m[23m 3.312, 3.333, 3.337, 3.379, 3.562, 3.312, 3.259, 3.302, 3.465, 3.505, 3.242, 3.201, 3.199, 3.156, 3.114, 3.…
+$ Asymmetry.coefficient [3m[38;5;246m<dbl>[39m[23m 2.2210, 1.0180, 2.6990, 2.2590, 1.3550, 2.4620, 3.5860, 2.7000, 2.0400, 1.9690, 4.5430, 1.7170, 3.9860, 3.1…
+$ Kernel.Groove         [3m[38;5;246m<dbl>[39m[23m 5.220, 4.956, 4.825, 4.805, 5.175, 4.956, 5.219, 5.000, 5.877, 5.533, 5.314, 5.001, 4.738, 4.872, 4.825, 4.…
+$ Target                [3m[38;5;246m<dbl>[39m[23m 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
+
+> summary(dataSet)
+      Area         Perimeter      Compactness     Kernel.Length    Kernel.Width   Asymmetry.coefficient Kernel.Groove       Target 
+ Min.   :10.59   Min.   :12.41   Min.   :0.8081   Min.   :4.899   Min.   :2.630   Min.   :0.7651        Min.   :4.519   Min.   :0  
+ 1st Qu.:12.27   1st Qu.:13.45   1st Qu.:0.8569   1st Qu.:5.262   1st Qu.:2.944   1st Qu.:2.5615        1st Qu.:5.045   1st Qu.:0  
+ Median :14.36   Median :14.32   Median :0.8734   Median :5.524   Median :3.237   Median :3.5990        Median :5.223   Median :1  
+ Mean   :14.85   Mean   :14.56   Mean   :0.8710   Mean   :5.629   Mean   :3.259   Mean   :3.7002        Mean   :5.408   Mean   :1  
+ 3rd Qu.:17.30   3rd Qu.:15.71   3rd Qu.:0.8878   3rd Qu.:5.980   3rd Qu.:3.562   3rd Qu.:4.7687        3rd Qu.:5.877   3rd Qu.:2  
+ Max.   :21.18   Max.   :17.25   Max.   :0.9183   Max.   :6.675   Max.   :4.033   Max.   :8.4560        Max.   :6.550   Max.   :2  
+
+> indices <- sample(2, nrow(dataSet), replace=TRUE, prob=c(0.7, 0.3))
+
+> trainset <- dataSet[indices==1,]
+
+> testset <- dataSet[indices==2,]
+
+> #svm.model <- svm(Target ~ ., data=trainset)
+> svm.model <- svm(Target ~ ., data=trainset, method = "svmRadial", cost=2, gamma=0.1)
+
+> svm.pred = predict(svm.model, testset[,! names(testset) %in% c("dataSet")])
+
+> svm.table=table(svm.pred, testset$Target)
+
+> # Now you should be able to create the confusion matrix
+> confusion_matrix <- confusionMatrix(svm.pred, testset$Target)
+
+> library(e1071) # For SVM
+
+> library(readr) #read.csv
+
+> library(hrbrthemes) #Rheme_ipsum
+
+> library(caret)
+
+> library(dplyr)
+
+> dataSet <- read_csv("data/Seed_Data.csv")
+[1mindexed[0m [32m0B[0m in [36m 0s[0m, [32m0B/s[0m[1mindexed[0m [32m2.15GB[0m in [36m 0s[0m, [32m2.15GB/s[0m                                                                                                                                         
+> colnames(dataSet)[1] <- "Area"
+
+> colnames(dataSet)[2] <- "Perimeter"
+
+> colnames(dataSet)[3] <- "Compactness"
+
+> colnames(dataSet)[4] <- "Kernel.Length"
+
+> colnames(dataSet)[5] <- "Kernel.Width"
+
+> colnames(dataSet)[6] <- "Asymmetry.coefficient"
+
+> colnames(dataSet)[7] <- "Kernel.Groove"
+
+> colnames(dataSet)[8] <- "Target"
+
+> dataSet <- as.data.frame(scale(dataSet))
+
+> #View(dataSet)
+> dim(dataSet)
+[1] 210   8
+
+> glimpse(dataSet)
+Rows: 210
+Columns: 8
+$ Area                  [3m[38;5;246m<dbl>[39m[23m 0.14175904, 0.01116136, -0.19160873, -0.34626388, 0.44419577, -0.16067770, -0.05413749, -0.25347079, 0.6125…
+$ Perimeter             [3m[38;5;246m<dbl>[39m[23m 0.214948819, 0.008204153, -0.359341919, -0.474200066, 0.329806966, -0.267455401, -0.053053525, -0.351684709…
+$ Compactness           [3m[38;5;246m<dbl>[39m[23m 6.045733e-05, 4.274938e-01, 1.438945e+00, 1.036904e+00, 1.371233e+00, 1.019976e+00, 3.767096e-01, 8.506951e…
+$ Kernel.Length         [3m[38;5;246m<dbl>[39m[23m 0.30349301, -0.16822270, -0.76181710, -0.68733567, 0.06650665, -0.54740087, -0.14790958, -0.47066243, 0.958…
+$ Kernel.Width          [3m[38;5;246m<dbl>[39m[23m 0.141364035, 0.196961591, 0.207551602, 0.318746714, 0.803239702, 0.141364035, 0.001046394, 0.114889009, 0.5…
+$ Asymmetry.coefficient [3m[38;5;246m<dbl>[39m[23m -0.98380096, -1.78390358, -0.66588820, -0.95852756, -1.55976843, -0.82351440, -0.07595385, -0.66522311, -1.…
+$ Kernel.Groove         [3m[38;5;246m<dbl>[39m[23m -0.38266305, -0.91981560, -1.18635720, -1.22705057, -0.47422315, -0.91981560, -0.38469772, -0.83029017, 0.9…
+$ Target                [3m[38;5;246m<dbl>[39m[23m -1.221825, -1.221825, -1.221825, -1.221825, -1.221825, -1.221825, -1.221825, -1.221825, -1.221825, -1.22182…
+
+> summary(dataSet)
+      Area           Perimeter        Compactness      Kernel.Length      Kernel.Width     Asymmetry.coefficient Kernel.Groove    
+ Min.   :-1.4632   Min.   :-1.6458   Min.   :-2.6619   Min.   :-1.6466   Min.   :-1.6642   Min.   :-1.95210      Min.   :-1.8090  
+ 1st Qu.:-0.8858   1st Qu.:-0.8494   1st Qu.:-0.5967   1st Qu.:-0.8267   1st Qu.:-0.8329   1st Qu.:-0.75734      1st Qu.:-0.7387  
+ Median :-0.1693   Median :-0.1832   Median : 0.1037   Median :-0.2371   Median :-0.0572   Median :-0.06731      Median :-0.3766  
+ Mean   : 0.0000   Mean   : 0.0000   Mean   : 0.0000   Mean   : 0.0000   Mean   : 0.0000   Mean   : 0.00000      Mean   : 0.0000  
+ 3rd Qu.: 0.8446   3rd Qu.: 0.8850   3rd Qu.: 0.7100   3rd Qu.: 0.7927   3rd Qu.: 0.8026   3rd Qu.: 0.71068      3rd Qu.: 0.9541  
+ Max.   : 2.1763   Max.   : 2.0603   Max.   : 2.0018   Max.   : 2.3619   Max.   : 2.0502   Max.   : 3.16303      Max.   : 2.3234  
+     Target      
+ Min.   :-1.222  
+ 1st Qu.:-1.222  
+ Median : 0.000  
+ Mean   : 0.000  
+ 3rd Qu.: 1.222  
+ Max.   : 1.222  
+
+> indices <- sample(2, nrow(dataSet), replace=TRUE, prob=c(0.7, 0.3))
+
+> trainset <- dataSet[indices==1,]
+
+> testset <- dataSet[indices==2,]
+
+> #svm.model <- svm(Target ~ ., data=trainset)
+> svm.model <- svm(Target ~ ., data=trainset, method = "svmRadial", cost=2, gamma=0.1)
+
+> svm.pred = predict(svm.model, testset[,! names(testset) %in% c("dataSet")])
+
+> svm.table=table(svm.pred, testset$Target)
+
+> # Now you should be able to create the confusion matrix
+> confusion_matrix <- confusionMatrix(svm.pred, testset$Target)
+
+> library(e1071) # For SVM
+
+> library(readr) #read.csv
+
+> library(hrbrthemes) #Rheme_ipsum
+
+> library(caret)
+
+> library(dplyr)
+
+> dataSet <- read_csv("data/Seed_Data.csv")
+[1mindexed[0m [32m0B[0m in [36m 0s[0m, [32m0B/s[0m[1mindexed[0m [32m2.15GB[0m in [36m 0s[0m, [32m2.15GB/s[0m                                                                                                                                         
+> colnames(dataSet)[1] <- "Area"
+
+> colnames(dataSet)[2] <- "Perimeter"
+
+> colnames(dataSet)[3] <- "Compactness"
+
+> colnames(dataSet)[4] <- "Kernel.Length"
+
+> colnames(dataSet)[5] <- "Kernel.Width"
+
+> colnames(dataSet)[6] <- "Asymmetry.coefficient"
+
+> colnames(dataSet)[7] <- "Kernel.Groove"
+
+> colnames(dataSet)[8] <- "Target"
+
+> dataSet <- as.data.frame(scale(dataSet))
+
+> #View(dataSet)
+> dim(dataSet)
+[1] 210   8
+
+> glimpse(dataSet)
+Rows: 210
+Columns: 8
+$ Area                  [3m[38;5;246m<dbl>[39m[23m 0.14175904, 0.01116136, -0.19160873, -0.34626388, 0.44419577, -0.16067770, -0.05413749, -0.25347079, 0.6125…
+$ Perimeter             [3m[38;5;246m<dbl>[39m[23m 0.214948819, 0.008204153, -0.359341919, -0.474200066, 0.329806966, -0.267455401, -0.053053525, -0.351684709…
+$ Compactness           [3m[38;5;246m<dbl>[39m[23m 6.045733e-05, 4.274938e-01, 1.438945e+00, 1.036904e+00, 1.371233e+00, 1.019976e+00, 3.767096e-01, 8.506951e…
+$ Kernel.Length         [3m[38;5;246m<dbl>[39m[23m 0.30349301, -0.16822270, -0.76181710, -0.68733567, 0.06650665, -0.54740087, -0.14790958, -0.47066243, 0.958…
+$ Kernel.Width          [3m[38;5;246m<dbl>[39m[23m 0.141364035, 0.196961591, 0.207551602, 0.318746714, 0.803239702, 0.141364035, 0.001046394, 0.114889009, 0.5…
+$ Asymmetry.coefficient [3m[38;5;246m<dbl>[39m[23m -0.98380096, -1.78390358, -0.66588820, -0.95852756, -1.55976843, -0.82351440, -0.07595385, -0.66522311, -1.…
+$ Kernel.Groove         [3m[38;5;246m<dbl>[39m[23m -0.38266305, -0.91981560, -1.18635720, -1.22705057, -0.47422315, -0.91981560, -0.38469772, -0.83029017, 0.9…
+$ Target                [3m[38;5;246m<dbl>[39m[23m -1.221825, -1.221825, -1.221825, -1.221825, -1.221825, -1.221825, -1.221825, -1.221825, -1.221825, -1.22182…
+
+> summary(dataSet)
+      Area           Perimeter        Compactness      Kernel.Length      Kernel.Width     Asymmetry.coefficient Kernel.Groove    
+ Min.   :-1.4632   Min.   :-1.6458   Min.   :-2.6619   Min.   :-1.6466   Min.   :-1.6642   Min.   :-1.95210      Min.   :-1.8090  
+ 1st Qu.:-0.8858   1st Qu.:-0.8494   1st Qu.:-0.5967   1st Qu.:-0.8267   1st Qu.:-0.8329   1st Qu.:-0.75734      1st Qu.:-0.7387  
+ Median :-0.1693   Median :-0.1832   Median : 0.1037   Median :-0.2371   Median :-0.0572   Median :-0.06731      Median :-0.3766  
+ Mean   : 0.0000   Mean   : 0.0000   Mean   : 0.0000   Mean   : 0.0000   Mean   : 0.0000   Mean   : 0.00000      Mean   : 0.0000  
+ 3rd Qu.: 0.8446   3rd Qu.: 0.8850   3rd Qu.: 0.7100   3rd Qu.: 0.7927   3rd Qu.: 0.8026   3rd Qu.: 0.71068      3rd Qu.: 0.9541  
+ Max.   : 2.1763   Max.   : 2.0603   Max.   : 2.0018   Max.   : 2.3619   Max.   : 2.0502   Max.   : 3.16303      Max.   : 2.3234  
+     Target      
+ Min.   :-1.222  
+ 1st Qu.:-1.222  
+ Median : 0.000  
+ Mean   : 0.000  
+ 3rd Qu.: 1.222  
+ Max.   : 1.222  
+
+> indices <- sample(2, nrow(dataSet), replace=TRUE, prob=c(0.7, 0.3))
+
+> trainset <- dataSet[indices==1,]
+
+> testset <- dataSet[indices==2,]
+
+> #svm.model <- svm(Target ~ ., data=trainset)
+> svm.model <- svm(Target ~ ., data=trainset, method = "svmRadial", cost=2, gamma=0.1)
+
+> svm.pred = predict(svm.model, testset[,! names(testset) %in% c("dataSet")])
+
+> svm.table=table(svm.pred, testset$Target)
+
+> library(e1071) # For SVM
+
+> library(readr) #read.csv
+
+> library(hrbrthemes) #Rheme_ipsum
+
+> library(caret)
+
+> library(dplyr)
+
+> dataSet <- read_csv("data/Seed_Data.csv")
+[1mindexed[0m [32m0B[0m in [36m 0s[0m, [32m0B/s[0m[1mindexed[0m [32m2.15GB[0m in [36m 0s[0m, [32m2.15GB/s[0m                                                                                                                                         
+> colnames(dataSet)[1] <- "Area"
+
+> colnames(dataSet)[2] <- "Perimeter"
+
+> colnames(dataSet)[3] <- "Compactness"
+
+> colnames(dataSet)[4] <- "Kernel.Length"
+
+> colnames(dataSet)[5] <- "Kernel.Width"
+
+> colnames(dataSet)[6] <- "Asymmetry.coefficient"
+
+> colnames(dataSet)[7] <- "Kernel.Groove"
+
+> colnames(dataSet)[8] <- "Target"
+
+> dataSet <- as.data.frame(scale(dataSet))
+
+> #View(dataSet)
+> dim(dataSet)
+[1] 210   8
+
+> glimpse(dataSet)
+Rows: 210
+Columns: 8
+$ Area                  [3m[38;5;246m<dbl>[39m[23m 0.14175904, 0.01116136, -0.19160873, -0.34626388, 0.44419577, -0.16067770, -0.05413749, -0.25347079, 0.6125…
+$ Perimeter             [3m[38;5;246m<dbl>[39m[23m 0.214948819, 0.008204153, -0.359341919, -0.474200066, 0.329806966, -0.267455401, -0.053053525, -0.351684709…
+$ Compactness           [3m[38;5;246m<dbl>[39m[23m 6.045733e-05, 4.274938e-01, 1.438945e+00, 1.036904e+00, 1.371233e+00, 1.019976e+00, 3.767096e-01, 8.506951e…
+$ Kernel.Length         [3m[38;5;246m<dbl>[39m[23m 0.30349301, -0.16822270, -0.76181710, -0.68733567, 0.06650665, -0.54740087, -0.14790958, -0.47066243, 0.958…
+$ Kernel.Width          [3m[38;5;246m<dbl>[39m[23m 0.141364035, 0.196961591, 0.207551602, 0.318746714, 0.803239702, 0.141364035, 0.001046394, 0.114889009, 0.5…
+$ Asymmetry.coefficient [3m[38;5;246m<dbl>[39m[23m -0.98380096, -1.78390358, -0.66588820, -0.95852756, -1.55976843, -0.82351440, -0.07595385, -0.66522311, -1.…
+$ Kernel.Groove         [3m[38;5;246m<dbl>[39m[23m -0.38266305, -0.91981560, -1.18635720, -1.22705057, -0.47422315, -0.91981560, -0.38469772, -0.83029017, 0.9…
+$ Target                [3m[38;5;246m<dbl>[39m[23m -1.221825, -1.221825, -1.221825, -1.221825, -1.221825, -1.221825, -1.221825, -1.221825, -1.221825, -1.22182…
+
+> summary(dataSet)
+      Area           Perimeter        Compactness      Kernel.Length      Kernel.Width     Asymmetry.coefficient Kernel.Groove    
+ Min.   :-1.4632   Min.   :-1.6458   Min.   :-2.6619   Min.   :-1.6466   Min.   :-1.6642   Min.   :-1.95210      Min.   :-1.8090  
+ 1st Qu.:-0.8858   1st Qu.:-0.8494   1st Qu.:-0.5967   1st Qu.:-0.8267   1st Qu.:-0.8329   1st Qu.:-0.75734      1st Qu.:-0.7387  
+ Median :-0.1693   Median :-0.1832   Median : 0.1037   Median :-0.2371   Median :-0.0572   Median :-0.06731      Median :-0.3766  
+ Mean   : 0.0000   Mean   : 0.0000   Mean   : 0.0000   Mean   : 0.0000   Mean   : 0.0000   Mean   : 0.00000      Mean   : 0.0000  
+ 3rd Qu.: 0.8446   3rd Qu.: 0.8850   3rd Qu.: 0.7100   3rd Qu.: 0.7927   3rd Qu.: 0.8026   3rd Qu.: 0.71068      3rd Qu.: 0.9541  
+ Max.   : 2.1763   Max.   : 2.0603   Max.   : 2.0018   Max.   : 2.3619   Max.   : 2.0502   Max.   : 3.16303      Max.   : 2.3234  
+     Target      
+ Min.   :-1.222  
+ 1st Qu.:-1.222  
+ Median : 0.000  
+ Mean   : 0.000  
+ 3rd Qu.: 1.222  
+ Max.   : 1.222  
+
+> indices <- sample(2, nrow(dataSet), replace=TRUE, prob=c(0.7, 0.3))
+
+> trainset <- dataSet[indices==1,]
+
+> testset <- dataSet[indices==2,]
+
+> #svm.model <- svm(Target ~ ., data=trainset)
+> svm.model <- svm(Target ~ ., data=trainset, method = "svmRadial", cost=2, gamma=0.1)
+
+> svm.pred = predict(svm.model, testset[,! names(testset) %in% c("dataSet")])
+
+> svm.table=table(svm.pred, testset$Target)
+
+> # Now you should be able to create the confusion matrix
+> confusion_matrix <- confusionMatrix(svm.pred, testset$Target)
+
+> library(e1071) # For SVM
+
+> library(readr) #read.csv
+
+> library(hrbrthemes) #Rheme_ipsum
+
+> library(caret)
+
+> library(dplyr)
+
+> dataSet <- read_csv("data/Seed_Data.csv")
+[1mindexed[0m [32m0B[0m in [36m 0s[0m, [32m0B/s[0m[1mindexed[0m [32m2.15GB[0m in [36m 0s[0m, [32m2.15GB/s[0m                                                                                                                                         
+> colnames(dataSet)[1] <- "Area"
+
+> colnames(dataSet)[2] <- "Perimeter"
+
+> colnames(dataSet)[3] <- "Compactness"
+
+> colnames(dataSet)[4] <- "Kernel.Length"
+
+> colnames(dataSet)[5] <- "Kernel.Width"
+
+> colnames(dataSet)[6] <- "Asymmetry.coefficient"
+
+> colnames(dataSet)[7] <- "Kernel.Groove"
+
+> colnames(dataSet)[8] <- "Target"
+
+> #View(dataSet)
+> dim(dataSet)
+[1] 210   8
+
+> glimpse(dataSet)
+Rows: 210
+Columns: 8
+$ Area                  [3m[38;5;246m<dbl>[39m[23m 15.26, 14.88, 14.29, 13.84, 16.14, 14.38, 14.69, 14.11, 16.63, 16.44, 15.26, 14.03, 13.89, 13.78, 13.74, 14…
+$ Perimeter             [3m[38;5;246m<dbl>[39m[23m 14.84, 14.57, 14.09, 13.94, 14.99, 14.21, 14.49, 14.10, 15.46, 15.25, 14.85, 14.16, 14.02, 14.06, 14.05, 14…
+$ Compactness           [3m[38;5;246m<dbl>[39m[23m 0.8710, 0.8811, 0.9050, 0.8955, 0.9034, 0.8951, 0.8799, 0.8911, 0.8747, 0.8880, 0.8696, 0.8796, 0.8880, 0.8…
+$ Kernel.Length         [3m[38;5;246m<dbl>[39m[23m 5.763, 5.554, 5.291, 5.324, 5.658, 5.386, 5.563, 5.420, 6.053, 5.884, 5.714, 5.438, 5.439, 5.479, 5.482, 5.…
+$ Kernel.Width          [3m[38;5;246m<dbl>[39m[23m 3.312, 3.333, 3.337, 3.379, 3.562, 3.312, 3.259, 3.302, 3.465, 3.505, 3.242, 3.201, 3.199, 3.156, 3.114, 3.…
+$ Asymmetry.coefficient [3m[38;5;246m<dbl>[39m[23m 2.2210, 1.0180, 2.6990, 2.2590, 1.3550, 2.4620, 3.5860, 2.7000, 2.0400, 1.9690, 4.5430, 1.7170, 3.9860, 3.1…
+$ Kernel.Groove         [3m[38;5;246m<dbl>[39m[23m 5.220, 4.956, 4.825, 4.805, 5.175, 4.956, 5.219, 5.000, 5.877, 5.533, 5.314, 5.001, 4.738, 4.872, 4.825, 4.…
+$ Target                [3m[38;5;246m<dbl>[39m[23m 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
+
+> summary(dataSet)
+      Area         Perimeter      Compactness     Kernel.Length    Kernel.Width   Asymmetry.coefficient Kernel.Groove       Target 
+ Min.   :10.59   Min.   :12.41   Min.   :0.8081   Min.   :4.899   Min.   :2.630   Min.   :0.7651        Min.   :4.519   Min.   :0  
+ 1st Qu.:12.27   1st Qu.:13.45   1st Qu.:0.8569   1st Qu.:5.262   1st Qu.:2.944   1st Qu.:2.5615        1st Qu.:5.045   1st Qu.:0  
+ Median :14.36   Median :14.32   Median :0.8734   Median :5.524   Median :3.237   Median :3.5990        Median :5.223   Median :1  
+ Mean   :14.85   Mean   :14.56   Mean   :0.8710   Mean   :5.629   Mean   :3.259   Mean   :3.7002        Mean   :5.408   Mean   :1  
+ 3rd Qu.:17.30   3rd Qu.:15.71   3rd Qu.:0.8878   3rd Qu.:5.980   3rd Qu.:3.562   3rd Qu.:4.7687        3rd Qu.:5.877   3rd Qu.:2  
+ Max.   :21.18   Max.   :17.25   Max.   :0.9183   Max.   :6.675   Max.   :4.033   Max.   :8.4560        Max.   :6.550   Max.   :2  
+
+> indices <- sample(2, nrow(dataSet), replace=TRUE, prob=c(0.7, 0.3))
+
+> trainset <- dataSet[indices==1,]
+
+> testset <- dataSet[indices==2,]
+
+> #svm.model <- svm(Target ~ ., data=trainset)
+> svm.model <- svm(Target ~ ., data=trainset, method = "svmRadial", cost=2, gamma=0.1)
+
+> svm.pred = predict(svm.model, testset[,! names(testset) %in% c("dataSet")])
+
+> svm.table=table(svm.pred, testset$Target)
+
+> # Convert predictions and testset$Target to factors
+> svm.pred <- round(svm.pred) #ARROTONDA FLOAT IN Number senza .
+
+> predF <- as.factor(svm.pred)
+
+> tesFac <- as.factor(testset$Target)
+
+> # Now you should be able to create the confusion matrix
+> confusion_matrix <- confusionMatrix(predF, tesFac)
+
+> library(e1071) # For SVM
+
+> library(readr) #read.csv
+
+> library(hrbrthemes) #Rheme_ipsum
+
+> library(caret)
+
+> library(dplyr)
+
+> dataSet <- read_csv("data/Seed_Data.csv")
+[1mindexed[0m [32m0B[0m in [36m 0s[0m, [32m0B/s[0m[1mindexed[0m [32m2.15GB[0m in [36m 0s[0m, [32m2.15GB/s[0m                                                                                                                                         
+> colnames(dataSet)[1] <- "Area"
+
+> colnames(dataSet)[2] <- "Perimeter"
+
+> colnames(dataSet)[3] <- "Compactness"
+
+> colnames(dataSet)[4] <- "Kernel.Length"
+
+> colnames(dataSet)[5] <- "Kernel.Width"
+
+> colnames(dataSet)[6] <- "Asymmetry.coefficient"
+
+> colnames(dataSet)[7] <- "Kernel.Groove"
+
+> colnames(dataSet)[8] <- "Target"
+
+> #View(dataSet)
+> dim(dataSet)
+[1] 210   8
+
+> glimpse(dataSet)
+Rows: 210
+Columns: 8
+$ Area                  [3m[38;5;246m<dbl>[39m[23m 15.26, 14.88, 14.29, 13.84, 16.14, 14.38, 14.69, 14.11, 16.63, 16.44, 15.26, 14.03, 13.89, 13.78, 13.74, 14…
+$ Perimeter             [3m[38;5;246m<dbl>[39m[23m 14.84, 14.57, 14.09, 13.94, 14.99, 14.21, 14.49, 14.10, 15.46, 15.25, 14.85, 14.16, 14.02, 14.06, 14.05, 14…
+$ Compactness           [3m[38;5;246m<dbl>[39m[23m 0.8710, 0.8811, 0.9050, 0.8955, 0.9034, 0.8951, 0.8799, 0.8911, 0.8747, 0.8880, 0.8696, 0.8796, 0.8880, 0.8…
+$ Kernel.Length         [3m[38;5;246m<dbl>[39m[23m 5.763, 5.554, 5.291, 5.324, 5.658, 5.386, 5.563, 5.420, 6.053, 5.884, 5.714, 5.438, 5.439, 5.479, 5.482, 5.…
+$ Kernel.Width          [3m[38;5;246m<dbl>[39m[23m 3.312, 3.333, 3.337, 3.379, 3.562, 3.312, 3.259, 3.302, 3.465, 3.505, 3.242, 3.201, 3.199, 3.156, 3.114, 3.…
+$ Asymmetry.coefficient [3m[38;5;246m<dbl>[39m[23m 2.2210, 1.0180, 2.6990, 2.2590, 1.3550, 2.4620, 3.5860, 2.7000, 2.0400, 1.9690, 4.5430, 1.7170, 3.9860, 3.1…
+$ Kernel.Groove         [3m[38;5;246m<dbl>[39m[23m 5.220, 4.956, 4.825, 4.805, 5.175, 4.956, 5.219, 5.000, 5.877, 5.533, 5.314, 5.001, 4.738, 4.872, 4.825, 4.…
+$ Target                [3m[38;5;246m<dbl>[39m[23m 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
+
+> summary(dataSet)
+      Area         Perimeter      Compactness     Kernel.Length    Kernel.Width   Asymmetry.coefficient Kernel.Groove       Target 
+ Min.   :10.59   Min.   :12.41   Min.   :0.8081   Min.   :4.899   Min.   :2.630   Min.   :0.7651        Min.   :4.519   Min.   :0  
+ 1st Qu.:12.27   1st Qu.:13.45   1st Qu.:0.8569   1st Qu.:5.262   1st Qu.:2.944   1st Qu.:2.5615        1st Qu.:5.045   1st Qu.:0  
+ Median :14.36   Median :14.32   Median :0.8734   Median :5.524   Median :3.237   Median :3.5990        Median :5.223   Median :1  
+ Mean   :14.85   Mean   :14.56   Mean   :0.8710   Mean   :5.629   Mean   :3.259   Mean   :3.7002        Mean   :5.408   Mean   :1  
+ 3rd Qu.:17.30   3rd Qu.:15.71   3rd Qu.:0.8878   3rd Qu.:5.980   3rd Qu.:3.562   3rd Qu.:4.7687        3rd Qu.:5.877   3rd Qu.:2  
+ Max.   :21.18   Max.   :17.25   Max.   :0.9183   Max.   :6.675   Max.   :4.033   Max.   :8.4560        Max.   :6.550   Max.   :2  
+
+> indices <- sample(2, nrow(dataSet), replace=TRUE, prob=c(0.7, 0.3))
+
+> trainset <- dataSet[indices==1,]
+
+> testset <- dataSet[indices==2,]
+
+> #svm.model <- svm(Target ~ ., data=trainset)
+> svm.model <- svm(Target ~ ., data=trainset, method = "svmRadial", cost=1, gamma=0.1)
+
+> svm.pred = predict(svm.model, testset[,! names(testset) %in% c("dataSet")])
+
+> svm.table=table(svm.pred, testset$Target)
+
+> # Convert predictions and testset$Target to factors
+> svm.pred <- round(svm.pred) #ARROTONDA FLOAT IN Number senza .
+
+> predF <- as.factor(svm.pred)
+
+> tesFac <- as.factor(testset$Target)
+
+> # Now you should be able to create the confusion matrix
+> confusion_matrix <- confusionMatrix(predF, tesFac)
+
+> confusion_matrix
+Confusion Matrix and Statistics
+
+          Reference
+Prediction  0  1  2
+         0 13  0  1
+         1  4 22  2
+         2  0  0 13
+
+Overall Statistics
+                                          
+               Accuracy : 0.8727          
+                 95% CI : (0.7552, 0.9473)
+    No Information Rate : 0.4             
+    P-Value [Acc > NIR] : 4.966e-13       
+                                          
+                  Kappa : 0.8039          
+                                          
+ Mcnemar's Test P-Value : 0.0719          
+
+Statistics by Class:
+
+                     Class: 0 Class: 1 Class: 2
+Sensitivity            0.7647   1.0000   0.8125
+Specificity            0.9737   0.8182   1.0000
+Pos Pred Value         0.9286   0.7857   1.0000
+Neg Pred Value         0.9024   1.0000   0.9286
+Prevalence             0.3091   0.4000   0.2909
+Detection Rate         0.2364   0.4000   0.2364
+Detection Prevalence   0.2545   0.5091   0.2364
+Balanced Accuracy      0.8692   0.9091   0.9062
+
+> library(e1071) # For SVM
+
+> library(readr) #read.csv
+
+> library(hrbrthemes) #Rheme_ipsum
+
+> library(caret)
+
+> library(dplyr)
+
+> dataSet <- read_csv("data/Seed_Data.csv")
+[1mindexed[0m [32m0B[0m in [36m 0s[0m, [32m0B/s[0m[1mindexed[0m [32m2.15GB[0m in [36m 0s[0m, [32m2.15GB/s[0m                                                                                                                                         
+> colnames(dataSet)[1] <- "Area"
+
+> colnames(dataSet)[2] <- "Perimeter"
+
+> colnames(dataSet)[3] <- "Compactness"
+
+> colnames(dataSet)[4] <- "Kernel.Length"
+
+> colnames(dataSet)[5] <- "Kernel.Width"
+
+> colnames(dataSet)[6] <- "Asymmetry.coefficient"
+
+> colnames(dataSet)[7] <- "Kernel.Groove"
+
+> colnames(dataSet)[8] <- "Target"
+
+> #View(dataSet)
+> dim(dataSet)
+[1] 210   8
+
+> glimpse(dataSet)
+Rows: 210
+Columns: 8
+$ Area                  [3m[38;5;246m<dbl>[39m[23m 15.26, 14.88, 14.29, 13.84, 16.14, 14.38, 14.69, 14.11, 16.63, 16.44, 15.26, 14.03, 13.89, 13.78, 13.74, 14…
+$ Perimeter             [3m[38;5;246m<dbl>[39m[23m 14.84, 14.57, 14.09, 13.94, 14.99, 14.21, 14.49, 14.10, 15.46, 15.25, 14.85, 14.16, 14.02, 14.06, 14.05, 14…
+$ Compactness           [3m[38;5;246m<dbl>[39m[23m 0.8710, 0.8811, 0.9050, 0.8955, 0.9034, 0.8951, 0.8799, 0.8911, 0.8747, 0.8880, 0.8696, 0.8796, 0.8880, 0.8…
+$ Kernel.Length         [3m[38;5;246m<dbl>[39m[23m 5.763, 5.554, 5.291, 5.324, 5.658, 5.386, 5.563, 5.420, 6.053, 5.884, 5.714, 5.438, 5.439, 5.479, 5.482, 5.…
+$ Kernel.Width          [3m[38;5;246m<dbl>[39m[23m 3.312, 3.333, 3.337, 3.379, 3.562, 3.312, 3.259, 3.302, 3.465, 3.505, 3.242, 3.201, 3.199, 3.156, 3.114, 3.…
+$ Asymmetry.coefficient [3m[38;5;246m<dbl>[39m[23m 2.2210, 1.0180, 2.6990, 2.2590, 1.3550, 2.4620, 3.5860, 2.7000, 2.0400, 1.9690, 4.5430, 1.7170, 3.9860, 3.1…
+$ Kernel.Groove         [3m[38;5;246m<dbl>[39m[23m 5.220, 4.956, 4.825, 4.805, 5.175, 4.956, 5.219, 5.000, 5.877, 5.533, 5.314, 5.001, 4.738, 4.872, 4.825, 4.…
+$ Target                [3m[38;5;246m<dbl>[39m[23m 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
+
+> summary(dataSet)
+      Area         Perimeter      Compactness     Kernel.Length    Kernel.Width   Asymmetry.coefficient Kernel.Groove       Target 
+ Min.   :10.59   Min.   :12.41   Min.   :0.8081   Min.   :4.899   Min.   :2.630   Min.   :0.7651        Min.   :4.519   Min.   :0  
+ 1st Qu.:12.27   1st Qu.:13.45   1st Qu.:0.8569   1st Qu.:5.262   1st Qu.:2.944   1st Qu.:2.5615        1st Qu.:5.045   1st Qu.:0  
+ Median :14.36   Median :14.32   Median :0.8734   Median :5.524   Median :3.237   Median :3.5990        Median :5.223   Median :1  
+ Mean   :14.85   Mean   :14.56   Mean   :0.8710   Mean   :5.629   Mean   :3.259   Mean   :3.7002        Mean   :5.408   Mean   :1  
+ 3rd Qu.:17.30   3rd Qu.:15.71   3rd Qu.:0.8878   3rd Qu.:5.980   3rd Qu.:3.562   3rd Qu.:4.7687        3rd Qu.:5.877   3rd Qu.:2  
+ Max.   :21.18   Max.   :17.25   Max.   :0.9183   Max.   :6.675   Max.   :4.033   Max.   :8.4560        Max.   :6.550   Max.   :2  
+
+> indices <- sample(2, nrow(dataSet), replace=TRUE, prob=c(0.7, 0.3))
+
+> trainset <- dataSet[indices==1,]
+
+> testset <- dataSet[indices==2,]
+
+> svm.model <- svm(Target ~ ., data=trainset)
+
+> #svm.model <- svm(Target ~ ., data=trainset, kernel = "radial", cost = 0.1, gamma = 0.5)
+> 
+> svm.pred = predict(svm.model, testset)
+
+> svm.table=table(svm.pred, testset$Target)
+
+> # Convert predictions and testset$Target to factors
+> svm.pred <- round(svm.pred) #ARROTONDA FLOAT IN Number senza .
+
+> predF <- as.factor(svm.pred)
+
+> tesFac <- as.factor(testset$Target)
+
+> # Now you should be able to create the confusion matrix
+> confusion_matrix <- confusionMatrix(predF, tesFac)
+
+> confusion_matrix
+Confusion Matrix and Statistics
+
+          Reference
+Prediction  0  1  2
+         0 15  1  1
+         1  4 23  7
+         2  0  0 18
+
+Overall Statistics
+                                          
+               Accuracy : 0.8116          
+                 95% CI : (0.6994, 0.8957)
+    No Information Rate : 0.3768          
+    P-Value [Acc > NIR] : 1.752e-13       
+                                          
+                  Kappa : 0.7156          
+                                          
+ Mcnemar's Test P-Value : 0.02034         
+
+Statistics by Class:
+
+                     Class: 0 Class: 1 Class: 2
+Sensitivity            0.7895   0.9583   0.6923
+Specificity            0.9600   0.7556   1.0000
+Pos Pred Value         0.8824   0.6765   1.0000
+Neg Pred Value         0.9231   0.9714   0.8431
+Prevalence             0.2754   0.3478   0.3768
+Detection Rate         0.2174   0.3333   0.2609
+Detection Prevalence   0.2464   0.4928   0.2609
+Balanced Accuracy      0.8747   0.8569   0.8462
